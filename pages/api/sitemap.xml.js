@@ -5,6 +5,7 @@ import db from "../../utils/db";
 import Post from '../../models/Post';
 import Product from '../../models/Product';
 import Feedback from '../../models/Feedback';
+import Author from '../../models/Author';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -17,7 +18,7 @@ export default async function handler(req, res) {
     await db.connectDb();
 
     // ── Fetch từ DB ──────────────────────────────────────────
-    const [posts, directPosts, products, feedbacks] = await Promise.all([
+    const [posts, directPosts, products, feedbacks, authors] = await Promise.all([
       // Bài viết 3 cấp: /bai-viet/[slug] — isDirectPost != true
       Post.find({ isDraft: { $ne: true }, isDirectPost: { $ne: true } })
         .select('slug updatedAt createdAt').lean(),
@@ -26,6 +27,7 @@ export default async function handler(req, res) {
         .select('slug updatedAt createdAt').lean(),
       Product.find({}).select('slug updatedAt createdAt').lean(),
       Feedback.find({}).select('slug updatedAt createdAt').lean(),
+      Author.find({}).select('slug updatedAt createdAt').lean(),
     ]);
 
     const baseUrl = 'https://dongphucunivi.com';
@@ -39,7 +41,6 @@ export default async function handler(req, res) {
       { url: '/bai-viet', priority: '0.8', changefreq: 'daily' },
       { url: '/lien-he', priority: '0.7', changefreq: 'monthly' },
       { url: '/dang-nhap', priority: '0.3', changefreq: 'monthly' },
-      { url: '/dang-ky', priority: '0.3', changefreq: 'monthly' },
     ];
 
     // ── Product category routes ──────────────────────────────
@@ -48,15 +49,10 @@ export default async function handler(req, res) {
       { url: '/san-pham/dong-phuc-yoga-pilates', priority: '0.9', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-pickleball', priority: '0.9', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-ao-gio', priority: '0.8', changefreq: 'weekly' },
-      { url: '/san-pham/dong-phuc-ao-polo', priority: '0.8', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-ao-thun', priority: '0.7', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-chay-bo', priority: '0.7', changefreq: 'weekly' },
-      { url: '/san-pham/dong-phuc-cong-so', priority: '0.7', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-golf-tennis', priority: '0.7', changefreq: 'weekly' },
-      { url: '/san-pham/dong-phuc-le-tan', priority: '0.7', changefreq: 'weekly' },
       { url: '/san-pham/dong-phuc-mma', priority: '0.7', changefreq: 'weekly' },
-      { url: '/san-pham/dong-phuc-su-kien', priority: '0.7', changefreq: 'weekly' },
-      { url: '/san-pham/dong-phuc-team-building', priority: '0.7', changefreq: 'weekly' },
     ];
 
     // ── Dynamic routes ────────────────────────────────────────
@@ -92,6 +88,14 @@ export default async function handler(req, res) {
       lastmod: feedback.updatedAt || feedback.createdAt,
     }));
 
+    // Tác giả
+    const authorRoutes = authors.map(author => ({
+      url: `/tac-gia/${author.slug}`,
+      priority: '0.6',
+      changefreq: 'weekly',
+      lastmod: author.updatedAt || author.createdAt,
+    }));
+
     // ── Build XML ─────────────────────────────────────────────
     const buildUrl = ({ url, priority, changefreq, lastmod }) => {
       const lastmodStr = lastmod
@@ -109,6 +113,7 @@ export default async function handler(req, res) {
     directPostRoutes.forEach(r => { sitemapXml += buildUrl(r); });   // ← thêm mới
     productRoutes.forEach(r => { sitemapXml += buildUrl(r); });
     feedbackRoutes.forEach(r => { sitemapXml += buildUrl(r); });
+    authorRoutes.forEach(r => { sitemapXml += buildUrl(r); });
 
     sitemapXml += `\n</urlset>`;
 
