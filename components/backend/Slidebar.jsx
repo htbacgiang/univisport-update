@@ -42,6 +42,7 @@ const NAV_GROUPS = [
     label: "Khách hàng",
     items: [
       { title: "Liên hệ", icon: Users2, href: "/dashboard/khach-hang" },
+      { title: "Đại lý", icon: ClipboardList, href: "/dashboard/dai-ly" },
       { title: "Người dùng", icon: UserCircle, href: "/dashboard/nguoi-dung" },
     ],
   },

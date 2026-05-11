@@ -63,9 +63,11 @@ const AuthorPage: NextPage<Props> = ({ author, posts = [] }) => {
         {/* Author Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
           {author.avatar ? (
-            <img
+            <Image
               src={author.avatar}
               alt={`Ảnh tác giả ${author.name} — ${author.role || "Đồng Phục Univi"}`}
+              width={96}
+              height={96}
               className="w-24 h-24 rounded-full object-cover flex-shrink-0 shadow-md"
             />
           ) : (
