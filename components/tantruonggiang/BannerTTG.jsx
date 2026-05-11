@@ -258,7 +258,7 @@ export default function Banner() {
           >
             <div
               ref={modalRef}
-              className="modal-content w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-5xl rounded-lg overflow-hidden"
+              className="modal-content rounded-lg overflow-hidden"
             >
 
               <div className="bg-white px-6 py-4 flex justify-center items-center border-b rounded-t-lg relative">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaTimes } from "react-icons/fa";
 import ContactForm from "../header/ContactForm";
 
 export default function CTABannerSection() {
@@ -146,18 +146,18 @@ export default function CTABannerSection() {
                 >
                     <div
                         ref={modalRef}
-                        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-xl"
+                        className="relative max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-xl"
                     >
-                        <div className="sticky top-0 z-50 flex justify-end p-2 bg-white/95 backdrop-blur border-b">
+                        <div className="bg-white px-6 py-4 flex justify-center items-center border-b rounded-t-lg relative">
+                            <h3 className="text-[#105d97] font-bold text-base md:text-lg tracking-wide uppercase text-center">
+                                Đăng ký tư vấn đồng phục Univi
+                            </h3>
                             <button
-                                type="button"
-                                className="inline-flex items-center gap-2 px-2 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-red-500 hover:text-white focus:outline-none"
-                                onClick={() => setOpen(false)}
-                                aria-label="Đóng popup"
+                                onClick={() => setContactOpen(false)}
+                                className="absolute right-4 text-[#105d97] hover:text-[#0d4c7a] transition-colors rounded-full p-1 hover:rotate-90 duration-300"
+                                aria-label="Đóng"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <FaTimes size={20} />
                             </button>
                         </div>
                         <ContactForm source={`CTA Banner (${currentPath})`} />

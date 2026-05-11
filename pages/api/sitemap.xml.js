@@ -41,6 +41,15 @@ export default async function handler(req, res) {
       { url: '/bai-viet', priority: '0.8', changefreq: 'daily' },
       { url: '/lien-he', priority: '0.7', changefreq: 'monthly' },
       { url: '/dang-nhap', priority: '0.3', changefreq: 'monthly' },
+      { url: '/dang-ky-dai-ly', priority: '0.6', changefreq: 'monthly' },
+      { url: '/chinh-sach-dai-ly', priority: '0.6', changefreq: 'monthly' },
+      { url: '/chinh-sach-bao-hanh', priority: '0.5', changefreq: 'monthly' },
+      { url: '/chinh-sach-bao-mat', priority: '0.5', changefreq: 'monthly' },
+      { url: '/chinh-sach-doi-tra', priority: '0.5', changefreq: 'monthly' },
+      { url: '/dieu-khoan-su-dung', priority: '0.5', changefreq: 'monthly' },
+      { url: '/huong-dan-dat-hang', priority: '0.5', changefreq: 'monthly' },
+      { url: '/giai-phap-2s', priority: '0.5', changefreq: 'monthly' },
+
     ];
 
     // ── Product category routes ──────────────────────────────

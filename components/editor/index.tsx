@@ -26,6 +26,7 @@ import { toast } from "react-toastify";
 import FAQEditor, { FAQ } from "./FAQEditor";
 import AuthorSelector from "./AuthorSelector";
 import { FacebookReel } from "./FacebookReel";
+import { AdBanner } from "./AdBanner";
 
 export interface FinalPost extends SeoResult {
   id?: string;
@@ -183,6 +184,7 @@ const Editor: FC<Props> = ({
       TableHeader,
       TableCell,
       FacebookReel,
+      AdBanner,
     ],
 
     editorProps: {

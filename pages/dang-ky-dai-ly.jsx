@@ -110,10 +110,10 @@ export default function RegisterDealer() {
         <meta name="twitter:image" content="https://dongphucunivi.com/images/banner-home-1.jpg" />
       </Head>
 
-      <div className="h-[80px]"></div>
+      <div className="h-[70px]"></div>
 
       {/* SECTION 1 — HERO */}
-      <section className="bg-[#105d97] text-white py-12 relative overflow-hidden">
+      <section className="bg-[#105d97] text-white py-10 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <h1 className="text-3xl md:text-4xl font-bold ">Đăng Ký Hợp Tác Cùng Univi</h1>
           <p className="text-lg text-blue-100 max-w-2xl mx-auto">

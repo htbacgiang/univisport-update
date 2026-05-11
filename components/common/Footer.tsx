@@ -148,6 +148,8 @@ export default function Footer() {
                       { href: "/huong-dan-dat-hang", text: "Hướng dẫn đặt hàng" },
                       { href: "/chinh-sach-bao-hanh", text: "Chính sách bảo hành" },
                       { href: "/chinh-sach-doi-tra", text: "Chính sách đổi trả" },
+                      { href: "/chinh-sach-dai-ly", text: "Chính sách đại lý" }
+
                     ].map((item, index) => (
                       <li key={index}>
                         <Link

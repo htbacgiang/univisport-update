@@ -172,6 +172,17 @@ const ResponsiveMenu = ({ isOpen, toggleMenu }) => {
               );
             })}
 
+            {/* CTA Button */}
+            <div className="pt-2 pb-2">
+              <Link
+                href="/dang-ky-dai-ly"
+                onClick={toggleMenu}
+                className="w-full flex items-center justify-center gap-2 bg-[#105d97] hover:bg-[#0d4c7a] text-white text-[15px] font-bold px-5 py-3.5 rounded-2xl transition-all duration-300 shadow-md"
+              >
+                Hợp tác cùng Univi
+              </Link>
+            </div>
+
             {/* Social icons */}
             <div className="pt-4 border-t border-gray-100">
               <p className="text-xs text-gray-400 text-center mb-3">Theo dõi chúng tôi</p>

@@ -13,8 +13,7 @@ export default function ContactForm({ source }) {
   const [resolvedSource, setResolvedSource] = useState(source || "");
   const [status, setStatus] = useState("");
   const [errors, setErrors] = useState({});
-  const leftSectionRef = useRef(null);
-  const rightSectionRef = useRef(null);
+  const formRef = useRef(null);
 
   const validateForm = () => {
     const newErrors = {};
@@ -30,13 +29,11 @@ export default function ContactForm({ source }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Auto-detect trang nguồn nếu không được truyền qua prop
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (source) {
       setResolvedSource(source);
     } else {
-      // Dùng pathname thay vì title+URL để gọn trong admin (VD: /san-pham/ao-gym)
       setResolvedSource(window.location.pathname || window.location.href);
     }
   }, [source]);
@@ -53,13 +50,9 @@ export default function ContactForm({ source }) {
       },
       { threshold: 0.2 }
     );
-    const leftSection = leftSectionRef.current;
-    const rightSection = rightSectionRef.current;
-    if (rightSection) observer.observe(rightSection);
-    if (leftSection && window.innerWidth >= 768) observer.observe(leftSection);
+    if (formRef.current) observer.observe(formRef.current);
     return () => {
-      if (rightSection) observer.unobserve(rightSection);
-      if (leftSection) observer.unobserve(leftSection);
+      if (formRef.current) observer.unobserve(formRef.current);
     };
   }, []);
 
@@ -81,7 +74,7 @@ export default function ContactForm({ source }) {
       });
       const result = await response.json();
       if (response.ok) {
-        setStatus("Đăng ký tư vấn thành công! Chúng tôi sẽ liên hệ lại sớm nhất.");
+        setStatus("Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại sớm nhất.");
         setFormData({ name: "", phone: "", email: "", message: "", service: "dong-phuc-univi", source: source || "" });
         setTimeout(() => setStatus(""), 5000);
       } else {
@@ -93,156 +86,129 @@ export default function ContactForm({ source }) {
   };
 
   const inputBase =
-    "w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm text-gray-800 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#105d97]/40 focus:border-[#105d97]";
+    "w-full bg-transparent border-0 border-b border-[#d1cfc8] pb-2 text-gray-800 placeholder-gray-600 transition-all duration-200 focus:outline-none focus:border-[#105d97] focus:ring-0 rounded-none text-[14px]";
 
   return (
-    <div className="relative">
-      <div className="max-w-8xl mx-auto">
-        <div className="rounded-3xl overflow-hidden shadow-sm border border-gray-100 bg-white">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left — info panel */}
-            <div
-              ref={leftSectionRef}
-              className="hidden md:flex flex-col justify-center gap-5 px-8 py-10 bg-gradient-to-br from-[#105d97] to-[#0d4a7a] text-white"
-            >
-              <div>
-                <span className="inline-block text-xs font-semibold tracking-widest uppercase text-blue-200 mb-2">
-                  Tư vấn miễn phí
-                </span>
-                <h2 className="text-2xl font-extrabold leading-snug">
-                  Nâng tầm phong cách với Đồng phục Univi
-                </h2>
+    <div className="bg-white py-8 md:px-10 px-5 font-sans">
+      <div className="max-w-lg mx-auto opacity-0" ref={formRef}>
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-2 text-[#105d97] font-bold text-xs tracking-widest uppercase">
+            <span className="w-2.5 h-2.5 rounded-full border-2 border-[#105d97] inline-block"></span>
+            Tư vấn miễn phí
+          </div>
+          <h2 className="text-xl md:text-2xl font-normal text-[#1a1a1a] mb-1.5 uppercase tracking-tight leading-tight">
+            Điền thông tin để được tư vấn
+          </h2>
+          <p className="text-gray-600 text-[13px]">
+            Thông tin của bạn sẽ được bảo mật. Các trường bắt buộc được đánh dấu <span className="text-red-500 font-bold">*</span>
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8" role="form">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <div className="relative pt-2">
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className={`peer ${inputBase} ${errors.name ? "border-red-400" : ""}`}
+                />
+                <label
+                  htmlFor="name"
+                  className="absolute left-0 top-2 text-gray-500 text-[14px] transition-all duration-200 pointer-events-none peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-[#105d97] peer-[:not(:placeholder-shown)]:-translate-y-5 peer-[:not(:placeholder-shown)]:text-xs"
+                >
+                  Họ và tên <span className="text-red-500">*</span>
+                </label>
               </div>
-              <p className="text-sm text-blue-100 leading-relaxed">
-                Trang phục thể thao chất lượng cao cho gym, yoga, chạy bộ và golf. Công nghệ UNI DRY thoáng khí, chất liệu an toàn — thoải mái và hiệu suất tối ưu.
-              </p>
-              <ul className="space-y-2.5">
-                {[
-                  "Thiết kế riêng theo yêu cầu",
-                  "Báo giá nhanh trong 24h",
-                  "Hỗ trợ mẫu thử trước khi sản xuất",
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm text-blue-50">
-                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs">✓</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
-
-            {/* Right — form */}
-            <div ref={rightSectionRef} className="opacity-0 px-6 sm:px-8 py-8 sm:py-10">
-              <h3 className="text-base font-bold text-gray-800 mb-5">
-                Điền thông tin để được tư vấn
-              </h3>
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-3.5"
-                role="form"
-                aria-label="Form đăng ký tư vấn đồng phục Univi"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                  <div>
-                    <input
-                      id="name"
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Họ và tên *"
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? "name-error" : undefined}
-                      className={`${inputBase} ${errors.name ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-                    />
-                    {errors.name && (
-                      <p id="name-error" className="text-red-500 text-xs mt-1 pl-1">{errors.name}</p>
-                    )}
-                  </div>
-                  <div>
-                    <input
-                      id="phone"
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="Số điện thoại *"
-                      aria-invalid={!!errors.phone}
-                      aria-describedby={errors.phone ? "phone-error" : undefined}
-                      className={`${inputBase} ${errors.phone ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-                    />
-                    {errors.phone && (
-                      <p id="phone-error" className="text-red-500 text-xs mt-1 pl-1">{errors.phone}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email (tùy chọn)"
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? "email-error" : undefined}
-                    className={`${inputBase} ${errors.email ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-                  />
-                  {errors.email && (
-                    <p id="email-error" className="text-red-500 text-xs mt-1 pl-1">{errors.email}</p>
-                  )}
-                </div>
-
-                <div>
-                  <div className="relative">
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      placeholder="Mô tả yêu cầu của bạn (loại đồng phục, số lượng…) (tùy chọn)"
-                      aria-describedby={errors.message ? "message-error" : undefined}
-                      className={`${inputBase} h-28 resize-none ${errors.message ? "border-red-400 bg-red-50" : "border-gray-200"}`}
-                    />
-                    <span className="absolute bottom-2.5 right-3 text-xs text-gray-400 pointer-events-none">
-                      {formData.message.length}/500
-                    </span>
-                  </div>
-                  {errors.message && (
-                    <p id="message-error" className="text-red-500 text-xs mt-1 pl-1">{errors.message}</p>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={status === "Đang gửi..."}
-                  className="w-full py-3 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-[#105d97] to-[#1a7ac4] hover:from-[#0d4a7a] hover:to-[#105d97] transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-60 flex items-center justify-center gap-2"
-                  aria-disabled={status === "Đang gửi..."}
+            <div>
+              <div className="relative pt-2">
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className={`peer ${inputBase} ${errors.email ? "border-red-400" : ""}`}
+                />
+                <label
+                  htmlFor="email"
+                  className="absolute left-0 top-2 text-gray-500 text-[14px] transition-all duration-200 pointer-events-none peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-[#105d97] peer-[:not(:placeholder-shown)]:-translate-y-5 peer-[:not(:placeholder-shown)]:text-xs"
                 >
-                  {status === "Đang gửi..." ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white" />
-                      Đang gửi...
-                    </>
-                  ) : (
-                    "Đăng ký tư vấn →"
-                  )}
-                </button>
-              </form>
-
-              {status && status !== "Đang gửi..." && (
-                <p
-                  className={`mt-3 text-center text-sm font-medium rounded-lg py-2 px-3 ${status.includes("thành công")
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-600"
-                    }`}
-                >
-                  {status}
-                </p>
-              )}
+                  Email (tùy chọn)
+                </label>
+              </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
           </div>
-        </div>
+
+          <div>
+            <div className="relative pt-2">
+              <input
+                id="phone"
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder=" "
+                className={`peer ${inputBase} ${errors.phone ? "border-red-400" : ""}`}
+              />
+              <label
+                htmlFor="phone"
+                className="absolute left-0 top-2 text-gray-500 text-[14px] transition-all duration-200 pointer-events-none peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-[#105d97] peer-[:not(:placeholder-shown)]:-translate-y-5 peer-[:not(:placeholder-shown)]:text-xs"
+              >
+                Số điện thoại <span className="text-red-500">*</span>
+              </label>
+            </div>
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+          </div>
+
+          <div>
+            <div className="relative pt-2">
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                placeholder=" "
+                className={`peer ${inputBase} h-10 resize-y ${errors.message ? "border-red-400" : ""}`}
+              />
+              <label
+                htmlFor="message"
+                className="absolute left-0 top-2 text-gray-500 text-[14px] transition-all duration-200 pointer-events-none peer-focus:-translate-y-5 peer-focus:text-xs peer-focus:text-[#105d97] peer-[:not(:placeholder-shown)]:-translate-y-5 peer-[:not(:placeholder-shown)]:text-xs"
+              >
+                Mô tả yêu cầu của bạn (loại đồng phục, số lượng…) (tùy chọn)
+              </label>
+            </div>
+            {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message}</p>}
+          </div>
+
+          <button
+            type="submit"
+            disabled={status === "Đang gửi..."}
+            className="bg-[#105d97] hover:bg-[#0d4a7a] text-white text-xs font-bold uppercase tracking-widest py-3 px-6 transition-colors duration-200 disabled:opacity-60 flex items-center justify-center gap-2.5 w-max"
+          >
+            {status === "Đang gửi..." ? "Đang gửi..." : "Đăng ký tư vấn"}
+            {status !== "Đang gửi..." && (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            )}
+          </button>
+        </form>
+
+        {status && status !== "Đang gửi..." && (
+          <p className={`mt-6 text-sm font-medium p-4 border-l-4 ${status.includes("thành công") ? "bg-green-50 border-green-500 text-green-700" : "bg-red-50 border-red-500 text-red-700"
+            }`}>
+            {status}
+          </p>
+        )}
       </div>
 
       <style jsx>{`
@@ -250,10 +216,10 @@ export default function ContactForm({ source }) {
           opacity: 0;
         }
         .slide-up {
-          animation: slideUp 0.6s ease-out forwards;
+          animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes slideUp {
-          from { opacity: 0; transform: translateY(40px); }
+          from { opacity: 0; transform: translateY(30px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 640px) {

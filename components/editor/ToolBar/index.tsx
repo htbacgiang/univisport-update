@@ -26,6 +26,7 @@ import EmbedYoutube from "./EmbedYoutube";
 import EmbedImage from "./EmbedImage";
 import InsertTable from "./InsertTable";
 import EmbedFacebookReels from "./EmbedFacebookReels";
+import InsertAdBanner from "./InsertAdBanner";
 
 interface Props {
   editor: Editor | null;
@@ -133,6 +134,11 @@ const ToolBar: FC<Props> = ({
       .focus()
       .insertTable({ rows, cols, withHeaderRow })
       .run();
+  };
+
+  const handleInsertAdBanner = (options: { src: string; href: string; alt?: string }) => {
+    if (!editor) return;
+    editor.chain().focus().setAdBanner(options).run();
   };
 
   const Head = () => {
@@ -270,6 +276,7 @@ const ToolBar: FC<Props> = ({
         <EmbedYoutube onSubmit={handleEmbedYoutube} onToggle={onDropdownToggle} />
         <EmbedFacebookReels onSubmit={handleEmbedFacebookReels} onToggle={onDropdownToggle} />
         <EmbedImage onSubmit={handleEmbedImage} onToggle={onDropdownToggle} />
+        <InsertAdBanner onSubmit={handleInsertAdBanner} onToggle={onDropdownToggle} />
 
         <Button onClick={onOpenImageClick}>
           <BsImageFill />

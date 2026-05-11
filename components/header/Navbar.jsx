@@ -123,12 +123,12 @@ const Navbar = () => {
             {/* Right actions */}
             <div className="flex items-center space-x-2">
               {/* Liên hệ đặt hàng button */}
-              <button
-                onClick={() => setContactOpen(true)}
+              <Link
+                href="/dang-ky-dai-ly"
                 className="hidden lg:flex items-center gap-2 bg-[#105d97] hover:bg-[#0d4c7a] text-white text-sm font-semibold px-4 py-2 rounded-full transition-all duration-300"
               >
-                Liên hệ đặt hàng
-              </button>
+                Hợp tác cùng Univi
+              </Link>
 
               {/* Mobile hamburger */}
               <button
@@ -153,7 +153,7 @@ const Navbar = () => {
           onClick={() => setContactOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl  overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-white px-6 py-4 flex justify-center items-center border-b rounded-t-lg relative">
