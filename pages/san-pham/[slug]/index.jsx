@@ -620,6 +620,20 @@ export default function ProductDetailPage({ product, relatedProducts = [], categ
               </div>
               <div className="relative">
                 <div className={`prose blog prose-base md:prose-lg max-w-none text-gray-700 transition-all duration-500 ${!isContentExpanded ? 'max-h-96 overflow-hidden' : ''}`}>
+                  <style jsx>{`
+                    .blog img { display: block; margin: 1.5em auto; }
+                    .blog figure { margin: 1.5em 0; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+                    .blog figure img { display: block; margin: 0 auto; }
+                    .blog figcaption { margin-top: 0.5em; font-size: 0.875em; color: #6b7280; font-style: italic; text-align: center; width: 100%; max-width: 100%; }
+                    .dark .blog figcaption { color: #9ca3af; }
+                    .blog :global(table) { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; width: max-content !important; margin: 1.5em auto !important; border-collapse: collapse; border: 1px solid #d1d5db; }
+                    .blog :global(td), .blog :global(th) { padding: 0.5em 0.5em; border: 1px solid #d1d5db; text-align: left; vertical-align: top; }
+                    .blog :global(th) { background-color: #f3f4f6; font-weight: 600; color: #111827; }
+                    .blog :global(td p), .blog :global(th p) { text-align: left !important; margin: 0; }
+                    :global(.dark) .blog :global(table) { border-color: #4b5563; }
+                    :global(.dark) .blog :global(td), :global(.dark) .blog :global(th) { border-color: #4b5563; }
+                    :global(.dark) .blog :global(th) { background-color: #374151; color: #f9fafb; }
+                  `}</style>
                   {parse(product.content || '<p class="text-gray-600">Không có thông tin chi tiết sản phẩm.</p>')}
                 </div>
                 {!isContentExpanded && (

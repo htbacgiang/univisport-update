@@ -152,8 +152,6 @@ export default function OrderGuide() {
                     <h3 className="text-xl font-medium text-gray-800 mb-2">Thanh toán online:</h3>
                     <ul className="list-disc list-inside text-gray-700 space-y-1 ml-2">
                       <li>Chuyển khoản ngân hàng</li>
-                      <li>Thẻ ATM nội địa</li>
-                      <li>Thẻ tín dụng/ghi nợ quốc tế</li>
                       <li>Ví điện tử (MoMo, ZaloPay)</li>
                       <li>Internet Banking</li>
                     </ul>
@@ -161,8 +159,8 @@ export default function OrderGuide() {
                   <div>
                     <h3 className="text-xl font-medium text-gray-800 mb-2">Thanh toán theo đợt:</h3>
                     <ul className="list-disc list-inside text-gray-700 space-y-1 ml-2">
-                      <li>Đặt cọc 30–50% khi ký hợp đồng</li>
-                      <li>Thanh toán 50–70% còn lại khi giao hàng</li>
+                      <li>Đặt cọc 50% khi ký hợp đồng</li>
+                      <li>Thanh toán 50% còn lại khi giao hàng</li>
                       <li>COD (Cash on Delivery) cho đơn hàng nhỏ</li>
                       <li>Thanh toán tại xưởng sản xuất</li>
                     </ul>

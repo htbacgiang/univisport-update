@@ -7,8 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Editor from '../../../components/univisport/Editor';
 import { debounce } from 'lodash';
-import { FileText, Image, Tag, Star, FileEdit, Upload, X, AlertCircle, Database, Plus, Lock, Unlock, Link as LinkIcon } from 'lucide-react';
+import { FileText, Image, Tag, Star, FileEdit, Upload, X, AlertCircle, Database, Plus, Lock, Unlock, Link as LinkIcon, GripVertical } from 'lucide-react';
 import styles from '../../../styles/add-product.module.css';
+import { ReactSortable } from 'react-sortablejs';
 
 // Vietnamese to ASCII for slug generation
 const vietnameseToAscii = (str) => {
@@ -947,122 +948,116 @@ export default function CreateJSONProductPage() {
                 <label className={styles.label}>
                   Đường dẫn ảnh bổ sung (tùy chọn)
                 </label>
-                {images.slice(1).map((img, index) => (
-                  <div key={index + 1} className={styles.imageInputRow}>
-                    <input
-                      type="text"
-                      value={img.src || ''}
-                      onChange={(e) => handleImageUrlChange(index + 1, e.target.value)}
-                      className={styles.input}
-                      placeholder={`/images/products/product-${index + 2}.jpg`}
-                    />
-                    <div className={styles.colorInputGroup}>
-                      {/* Tên màu */}
-                      <div className={styles.dualColorGroup}>
-                        <span className={styles.colorLabel}>Tên màu</span>
-                        <input
-                          type="text"
-                          value={img.name || ''}
-                          onChange={(e) => handleColorNameChange(index + 1, e.target.value)}
-                          className={styles.colorNameInput}
-                          placeholder="VD: Đỏ, Xanh..."
-                          title="Tên màu hiển thị cho khách hàng"
-                        />
+                <ReactSortable
+                  list={images.slice(1).map((img, i) => ({ ...img, id: i + 1 }))}
+                  setList={(newList) => {
+                    setImages([images[0], ...newList.map(({ id, ...rest }) => rest)]);
+                  }}
+                  handle=".drag-handle-img"
+                  animation={150}
+                  ghostClass={styles.sortableGhost}
+                >
+                  {images.slice(1).map((img, index) => (
+                    <div key={`img-${index}`} className={styles.additionalImageCard} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: '0.625rem' }}>
+                      {/* Cột trái: Drag + Thumbnail */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                        <div className={`drag-handle-img ${styles.dragHandle}`} title="Kéo để sắp xếp">
+                          <GripVertical size={15} />
+                        </div>
+                        <div className={styles.thumbnailPreviewLg}>
+                          {img.src
+                            ? /* eslint-disable-next-line @next/next/no-img-element */
+                              <img src={img.src} alt={`Ảnh ${index + 2}`} className={styles.thumbnailImage} />
+                            : <div className={styles.thumbnailPlaceholder} />
+                          }
+                        </div>
                       </div>
 
-                      <div className={styles.dualColorGroup}>
-                        <span className={styles.colorLabel}>Màu 1</span>
-                        <input
-                          type="color"
-                          value={img.color1 || '#000000'}
-                          onChange={(e) => handleColorChange(index + 1, 'color1', e.target.value)}
-                          className={styles.colorPicker}
-                          title="Chọn màu 1"
-                        />
-                        <input
-                          type="text"
-                          value={img.color1 || '#000000'}
-                          onChange={(e) => handleColorChange(index + 1, 'color1', e.target.value)}
-                          className={styles.hexInput}
-                          placeholder="#000000"
-                          pattern="^#[0-9A-Fa-f]{6}$"
-                        />
-                      </div>
-
-                      {/* Màu 2 - tuỳ chọn */}
-                      {img.color2 ? (
-                        <div className={styles.dualColorGroup}>
-                          <span className={styles.colorLabel}>Màu 2</span>
-                          <input
-                            type="color"
-                            value={img.color2}
-                            onChange={(e) => handleColorChange(index + 1, 'color2', e.target.value)}
-                            className={styles.colorPicker}
-                            title="Chọn màu 2"
-                          />
+                      {/* Cột phải: URL + Tên màu + Chọn màu */}
+                      <div className={styles.additionalImageRight}>
+                        {/* Dòng 1: URL + Xóa */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <input
                             type="text"
-                            value={img.color2}
-                            onChange={(e) => handleColorChange(index + 1, 'color2', e.target.value)}
-                            className={styles.hexInput}
-                            placeholder="#ffffff"
-                            pattern="^#[0-9A-Fa-f]{6}$"
+                            value={img.src || ''}
+                            onChange={(e) => handleImageUrlChange(index + 1, e.target.value)}
+                            className={styles.input}
+                            placeholder={`/images/products/product-${index + 2}.jpg`}
                           />
                           <button
                             type="button"
-                            onClick={() => handleColorChange(index + 1, 'color2', '')}
-                            className={styles.removeColor2Btn}
-                            title="Xóa màu 2"
-                          >×</button>
+                            onClick={() => handleRemoveImage(index + 1)}
+                            className={styles.removeImageButton}
+                          >
+                            <X size={14} />
+                          </button>
                         </div>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleColorChange(index + 1, 'color2', '#ffffff')}
-                          className={styles.addColor2Btn}
-                          title="Thêm màu thứ 2"
-                        >
-                          + Màu 2
-                        </button>
-                      )}
-
-                      {/* Preview split-circle */}
-                      {img.color2 ? (
-                        <div
-                          className={styles.splitCirclePreview}
-                          title={`${img.color1 || '#000000'} / ${img.color2}`}
-                          style={{
-                            background: `linear-gradient(90deg, ${img.color1 || '#000000'} 50%, ${img.color2} 50%)`,
-                          }}
-                        />
-                      ) : (
-                        <div
-                          className={styles.splitCirclePreview}
-                          title={img.color1 || '#000000'}
-                          style={{ background: img.color1 || '#000000' }}
-                        />
-                      )}
-
-                      {img.src && (
-                        <div className={styles.thumbnailPreview}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={img.src}
-                            alt={`Ảnh ${index + 2}`}
-                            className={styles.thumbnailImage}
+                        
+                        {/* Dòng 2: Tên màu + Màu 1 + Màu 2 + Preview */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                          <div className={styles.dualColorGroup}>
+                            <span className={styles.colorLabel}>Tên màu</span>
+                            <input
+                              type="text"
+                              value={img.name || ''}
+                              onChange={(e) => handleColorNameChange(index + 1, e.target.value)}
+                              className={styles.colorNameInput}
+                              placeholder="VD: Đỏ, Xanh..."
+                              title="Tên màu"
+                            />
+                          </div>
+                          <div className={styles.dualColorGroup}>
+                            <span className={styles.colorLabel}>Màu 1</span>
+                            <input
+                              type="color"
+                              value={img.color1 || '#000000'}
+                              onChange={(e) => handleColorChange(index + 1, 'color1', e.target.value)}
+                              className={styles.colorPickerSm}
+                              title="Chọn màu 1"
+                            />
+                            <input
+                              type="text"
+                              value={img.color1 || '#000000'}
+                              onChange={(e) => handleColorChange(index + 1, 'color1', e.target.value)}
+                              className={styles.hexInputSm}
+                              placeholder="#000000"
+                              pattern="^#[0-9A-Fa-f]{6}$"
+                            />
+                          </div>
+                          {img.color2 ? (
+                            <div className={styles.dualColorGroup}>
+                              <span className={styles.colorLabel}>Màu 2</span>
+                              <input
+                                type="color"
+                                value={img.color2}
+                                onChange={(e) => handleColorChange(index + 1, 'color2', e.target.value)}
+                                className={styles.colorPickerSm}
+                                title="Chọn màu 2"
+                              />
+                              <input
+                                type="text"
+                                value={img.color2}
+                                onChange={(e) => handleColorChange(index + 1, 'color2', e.target.value)}
+                                className={styles.hexInputSm}
+                                placeholder="#ffffff"
+                                pattern="^#[0-9A-Fa-f]{6}$"
+                              />
+                              <button type="button" onClick={() => handleColorChange(index + 1, 'color2', '')} className={styles.removeColor2Btn} title="Xóa màu 2">×</button>
+                            </div>
+                          ) : (
+                            <button type="button" onClick={() => handleColorChange(index + 1, 'color2', '#ffffff')} className={styles.addColor2Btn} title="Thêm màu 2">+ Màu 2</button>
+                          )}
+                          {/* Preview circle */}
+                          <div
+                            className={styles.splitCirclePreviewSm}
+                            title={img.color2 ? `${img.color1 || '#000'} / ${img.color2}` : (img.color1 || '#000')}
+                            style={{ background: img.color2 ? `linear-gradient(90deg, ${img.color1 || '#000'} 50%, ${img.color2} 50%)` : (img.color1 || '#000') }}
                           />
                         </div>
-                      )}
+                      </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(index + 1)}
-                      className={styles.removeImageButton}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </ReactSortable>
                 <button
                   type="button"
                   onClick={handleAddImageInput}
@@ -1081,66 +1076,79 @@ export default function CreateJSONProductPage() {
                 <p className="text-xs text-gray-500 mb-3" style={{ marginBottom: '1rem' }}>
                   Nhập tỷ lệ ảnh (width x height) để hiển thị trong React Photo Gallery.
                 </p>
-                {formData.gallery.map((img, index) => (
-                  <div key={index} className={styles.imageInputRow} style={{ gridTemplateColumns: '1fr auto auto auto auto' }}>
-                    <input
-                      type="text"
-                      value={img.src || ''}
-                      onChange={(e) => handleGalleryImageUrlChange(index, e.target.value)}
-                      className={styles.input}
-                      placeholder={`/images/products/gallery-${index + 1}.jpg`}
-                    />
-                    
-                    <div className={styles.dimensionGroup} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <span className={styles.colorLabel} style={{ minWidth: 'auto' }}>W:</span>
+                <ReactSortable
+                  list={formData.gallery.map((img, i) => ({ ...img, id: i }))}
+                  setList={(newList) => {
+                    dispatch({ type: 'SET_GALLERY', gallery: newList.map(({ id, ...rest }) => rest) });
+                  }}
+                  handle=".drag-handle-gallery"
+                  animation={150}
+                  ghostClass={styles.sortableGhost}
+                >
+                  {formData.gallery.map((img, index) => (
+                    <div key={`gallery-${index}`} className={styles.imageInputRow} style={{ gridTemplateColumns: 'auto 1fr auto auto auto auto', cursor: 'default' }}>
+                      <div className={`drag-handle-gallery ${styles.dragHandle}`} title="Kéo để sắp xếp">
+                        <GripVertical size={16} />
+                      </div>
                       <input
-                        type="number"
-                        value={img.width || 4}
-                        onChange={(e) => handleGalleryWidthChange(index, e.target.value)}
-                        className={styles.hexInput}
-                        style={{ width: '45px' }}
+                        type="text"
+                        value={img.src || ''}
+                        onChange={(e) => handleGalleryImageUrlChange(index, e.target.value)}
+                        className={styles.input}
+                        placeholder={`/images/products/gallery-${index + 1}.jpg`}
                       />
-                      <span className={styles.colorLabel} style={{ minWidth: 'auto' }}>H:</span>
-                      <input
-                        type="number"
-                        value={img.height || 3}
-                        onChange={(e) => handleGalleryHeightChange(index, e.target.value)}
-                        className={styles.hexInput}
-                        style={{ width: '45px' }}
-                      />
-                    </div>
 
-                    <select
-                      value={img.aspectRatio || 'landscape-3-4'}
-                      onChange={(e) => handleGalleryAspectRatioChange(index, e.target.value)}
-                      className={styles.select}
-                      style={{ width: '130px', padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}
-                    >
-                      <option value="landscape-3-4">Ngang 4:3</option>
-                      <option value="square">Vuông 1:1</option>
-                      <option value="portrait">Dọc 3:4</option>
-                    </select>
-
-                    {img.src && (
-                      <div className={styles.thumbnailPreview}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={img.src}
-                          alt={`Gallery ${index + 1}`}
-                          className={styles.thumbnailImage}
+                      <div className={styles.dimensionGroup} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <span className={styles.colorLabel} style={{ minWidth: 'auto' }}>W:</span>
+                        <input
+                          type="number"
+                          value={img.width || 4}
+                          onChange={(e) => handleGalleryWidthChange(index, e.target.value)}
+                          className={styles.hexInput}
+                          style={{ width: '45px' }}
+                        />
+                        <span className={styles.colorLabel} style={{ minWidth: 'auto' }}>H:</span>
+                        <input
+                          type="number"
+                          value={img.height || 3}
+                          onChange={(e) => handleGalleryHeightChange(index, e.target.value)}
+                          className={styles.hexInput}
+                          style={{ width: '45px' }}
                         />
                       </div>
-                    )}
 
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveGalleryItem(index)}
-                      className={styles.removeImageButton}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
+                      <select
+                        value={img.aspectRatio || 'landscape-3-4'}
+                        onChange={(e) => handleGalleryAspectRatioChange(index, e.target.value)}
+                        className={styles.select}
+                        style={{ width: '130px', padding: '0.35rem 0.5rem', fontSize: '0.75rem' }}
+                      >
+                        <option value="landscape-3-4">Ngang 4:3</option>
+                        <option value="square">Vuông 1:1</option>
+                        <option value="portrait">Dọc 3:4</option>
+                      </select>
+
+                      {img.src && (
+                        <div className={styles.thumbnailPreview}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={img.src}
+                            alt={`Gallery ${index + 1}`}
+                            className={styles.thumbnailImage}
+                          />
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveGalleryItem(index)}
+                        className={styles.removeImageButton}
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </ReactSortable>
                 <button
                   type="button"
                   onClick={handleAddGalleryItem}

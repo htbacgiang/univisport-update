@@ -9,6 +9,10 @@ import TipTapImage from "@tiptap/extension-image";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 import ToolBar from "../editor/ToolBar";
 import EditLink from "../editor/Link/EditLink";
 import GalleryModal, { ImageSelectionResult } from "../editor/GalleryModal";
@@ -50,6 +54,12 @@ const Editor: FC<Props> = ({ content, onChange }): JSX.Element => {
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Link.configure({
         autolink: false,
         linkOnPaste: false,
@@ -157,17 +167,27 @@ const Editor: FC<Props> = ({ content, onChange }): JSX.Element => {
 
   return (
     <>
-      <div className="p-3 dark:bg-slate-900 border-b-2 transition">
-        <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 text-gray-800 dark:text-white">
+      <div className="dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 rounded-lg transition flex flex-col bg-white overflow-hidden">
+        <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 text-gray-800 dark:text-white shadow-sm border-b border-gray-200 dark:border-slate-700">
           <ToolBar
             editor={editor}
             onOpenImageClick={() => setShowGallery(true)}
           />
-          <div className="h-[1px] w-full bg-secondary-dark dark:bg-secondary-light my-3" />
         </div>
 
         {editor ? <EditLink editor={editor} /> : null}
-        <EditorContent editor={editor} className="min-h-[300px] prose max-w-full mx-auto" />
+        <div className="flex-1 overflow-y-auto max-h-[600px] p-4 bg-white dark:bg-slate-900 custom-scrollbar blog">
+          <EditorContent editor={editor} className="min-h-[300px] prose max-w-full mx-auto focus:outline-none" />
+          <style jsx>{`
+            .blog :global(table) { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; width: max-content !important; margin: 1.5em auto !important; border-collapse: collapse; border: 1px solid #d1d5db; }
+            .blog :global(td), .blog :global(th) { padding: 0.5em 0.5em; border: 1px solid #d1d5db; text-align: left; vertical-align: top; }
+            .blog :global(th) { background-color: #f3f4f6; font-weight: 600; color: #111827; }
+            .blog :global(td p), .blog :global(th p) { text-align: left !important; margin: 0; }
+            :global(.dark) .blog :global(table) { border-color: #4b5563; }
+            :global(.dark) .blog :global(td), :global(.dark) .blog :global(th) { border-color: #4b5563; }
+            :global(.dark) .blog :global(th) { background-color: #374151; color: #f9fafb; }
+          `}</style>
+        </div>
       </div>
 
       <GalleryModal

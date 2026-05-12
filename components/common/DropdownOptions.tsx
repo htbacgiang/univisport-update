@@ -12,6 +12,7 @@ const DropdownOptions: FC<Props> = ({ head, options }): JSX.Element => {
 
   return (
     <button
+      type="button"
       onBlur={() => setShowOptions(false)}
       onMouseDown={() => setShowOptions(!showOptions)}
       className="relative"
